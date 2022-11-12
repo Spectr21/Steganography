@@ -9,7 +9,7 @@ def open_mp3(source):
 	audio = AudioSegment.from_mp3(source)
 	samples = []
 	raw = audio.split_to_mono()
-	if (audio.chennels == 2):
+	if (audio.channels == 2):
 		sample = [[],[]]
 		samples[0] = raw[0].get_array_of_samples()
 		samples[1] = raw[1].get_array_of_samples()
