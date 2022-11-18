@@ -73,7 +73,7 @@ btn = Button(frame_bottom, text='Encode', command=encode, height=20, width=200)
 btn.pack()
 
 frame_info = Frame(root)
-frame_info.place(relx=0.9, rely=0.95, relwidth=0.1, relheight=0.05)
+frame_info.place(relx=0.88, rely=0.95, relwidth=0.12, relheight=0.05)
 
 btn = Button(frame_info, text='Programme info', command=info)
 btn.pack()
