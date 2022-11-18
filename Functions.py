@@ -86,4 +86,4 @@ def fourier_and_so_on(segments, segment_count):
     """
     tmp = [np.fft.rfft(segments[i]) for i in range(segment_count)]
     vphase = np.vectorize(cmath.phase)
-#     WORK IN PROGRESSs
+#     WORK IN PROGRESS
