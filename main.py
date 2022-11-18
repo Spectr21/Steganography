@@ -1,6 +1,10 @@
-import tkinter.messagebox
+from tkinter.messagebox import showinfo
 from tkinter import *
 from tkinter import filedialog as fd
+
+
+def info():
+    showinfo("Information", "Данное приложение позволять кодировать и декодировать сообщение в аудио файле с помощью стеганографии, для этого нажмите на соответствующую кнопку в основном окне. ")
 
 
 def back(*p):
@@ -12,8 +16,8 @@ def back(*p):
 
 
 def open_file():
-    fd.askopenfilename()
-    tkinter.messagebox.Message(text="Work in progress")
+    fn = fd.askopenfilename()
+    showinfo('Process', f"Magic with file {fn} in process")
 
 
 def encode():
@@ -66,6 +70,12 @@ btn = Button(frame_top, text='Decode', command=decode, height=20, width=200)
 btn.pack()
 
 btn = Button(frame_bottom, text='Encode', command=encode, height=20, width=200)
+btn.pack()
+
+frame_info = Frame(root)
+frame_info.place(relx=0.9, rely=0.95, relwidth=0.1, relheight=0.05)
+
+btn = Button(frame_info, text='Programme info', command=info)
 btn.pack()
 
 root.mainloop()
