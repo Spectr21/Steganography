@@ -86,12 +86,9 @@ right_mod = right_mod.astype(np.int16)
 
 fr = raw[0].frame_rate
 sw = raw[0].sample_width
-sadjfhbl = raw[0].frame_count()
 if audio.channels >= 2:
     ch_1 = AudioSegment(left_mod.tobytes(), frame_rate=fr, sample_width=sw, channels=1)
-    tuigj = ch_1.frame_count()
     ch_2 = AudioSegment(right_mod.tobytes(), frame_rate=fr, sample_width=sw, channels=1)
-    tuigj2 = ch_2.frame_count()
     new_audio = AudioSegment.from_mono_audiosegments(ch_1, ch_2)
 else:
     new_audio = AudioSegment(left_mod.tobytes(), frame_rate=fr, sample_width=sw, channels=1)
