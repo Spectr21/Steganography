@@ -77,9 +77,6 @@ def hide(source, message):
     :return:
     """
     print("getting samples")
-    source = "/Users/maxim/Downloads/2021 - Unplugged at The Tannery Studios/04 - RIP (Acoustic).mp3"
-    # source = "/Users/maxim/Downloads/StarWars60.wav"
-    # message = "1234567"
     samples, sample_rate = librosa.load(source, mono=False)
 
     print("segments and add silence if needed")
