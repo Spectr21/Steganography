@@ -1,8 +1,9 @@
-from pydub import AudioSegment
+import librosa
+import soundfile
+from scipy.io import wavfile
 import numpy as np
 from math import ceil, log2, pi
 from cmath import phase, exp
-from pydub.utils import mediainfo
 
 
 def str_to_arr(s):
@@ -38,10 +39,10 @@ def recover(source, segment_width):
     :param segment_width:
     :return:
     """
-    # audio = AudioSegment.from_mp3(source)
-    audio = AudioSegment.from_wav(source)
-    raw_left = audio.split_to_mono()[0]
-    left = np.array(raw_left.get_array_of_samples())
+    samples, sample_rate = librosa.load(source, mono=False)
+    left = samples
+    if samples.ndim >= 2:
+        left = samples[0]
     segment0 = left[:segment_width]
     wave0 = np.fft.rfft(segment0)
     vphase = np.vectorize(phase)
@@ -49,21 +50,23 @@ def recover(source, segment_width):
     waves_count = segment_width // 2 + 1
     bits = []
     for i in range(segment_width // 4):
-        delta = abs(abs(phase0[waves_count - i - 2]) - pi / 2)
-        if delta < 0.3:
-            if phase0[waves_count - i - 2] > 0:
-                bits.append(1)
-            else:
-                bits.append(0)
-        else:
-            break
-        # delta = phase0[waves_count - i - 2]
-        # if delta < -pi / 3:
-        #     bits.append(0)
-        # elif delta > pi / 3:
-        #     bits.append(1)
+        # delta = abs(abs(phase0[waves_count - i - 2]) - pi / 2)
+        # if delta < 0.3:
+        #     if phase0[waves_count - i - 2] > 0:
+        #         bits.append(1)
+        #     else:
+        #         bits.append(0)
         # else:
         #     break
+        ind = waves_count - i - 2
+        # ind = i + 1
+        delta = phase0[ind]
+        if delta < -pi / 3:
+            bits.append(0)
+        elif delta > pi / 3:
+            bits.append(1)
+        else:
+            break
     return arr_to_str(bits)
 
 
@@ -74,28 +77,23 @@ def hide(source, message):
     :return:
     """
     print("getting samples")
-
-    audio = AudioSegment.from_mp3(source)
-    samples = []
-    raw = audio.split_to_mono()
-    if audio.channels >= 2:
-
-        samples.append(np.array(raw[0].get_array_of_samples()))
-        samples.append(np.array(raw[1].get_array_of_samples()))
-    else:
-        samples = [raw[0].get_array_of_samples()]
+    source = "/Users/maxim/Downloads/2021 - Unplugged at The Tannery Studios/04 - RIP (Acoustic).mp3"
+    # source = "/Users/maxim/Downloads/StarWars60.wav"
+    # message = "1234567"
+    samples, sample_rate = librosa.load(source, mono=False)
 
     print("segments and add silence if needed")
-
-    left = samples[0]
+    left = samples
+    if samples.ndim >= 2:
+        left = samples[0]
     message_len = len(message) * 8
     v = ceil(log2(message_len) + 1)
     segment_width = 2 ** (v + 1)
     segment_count = ceil(len(left) / segment_width)
     left = np.resize(left, segment_count * segment_width)
     segments = left.reshape(segment_count, -1)
-    if audio.channels >= 2:
-        right_mod = np.resize(samples[0], segment_count * segment_width)
+    if samples.ndim >= 2:
+        right_mod = np.resize(samples[1], segment_count * segment_width)
 
     print("phases and amplitubes using fft")
 
@@ -120,8 +118,9 @@ def hide(source, message):
     if msg_bits == [None]:
         print("Unknown symbol")
         return
-    for i in range(len(msg_bits)):
+    for i in range(message_len):
         ind = waves_count - i - 2
+        # ind = i + 1
         if msg_bits[i] == 1:
             phase0_mod[ind] = pi / 2
         else:
@@ -148,20 +147,16 @@ def hide(source, message):
     waves_mod = [vwave(amps[i], phases_mod[i]) for i in range(segment_count)]
     segments_mod = [np.fft.irfft(waves_mod[i]) for i in range(segment_count)]
     left_mod = np.reshape(segments_mod, -1)
-    left_mod = left_mod.astype(np.int16)
-    right_mod = right_mod.astype(np.int16)
 
     print("saving file")
 
-    fr = raw[0].frame_rate
-    sw = raw[0].sample_width
-    if audio.channels >= 2:
-        ch_1 = AudioSegment(left_mod.tobytes(), frame_rate=fr, sample_width=sw, channels=1)
-        ch_2 = AudioSegment(right_mod.tobytes(), frame_rate=fr, sample_width=sw, channels=1)
-        new_audio = AudioSegment.from_mono_audiosegments(ch_1, ch_2)
-    else:
-        new_audio = AudioSegment(left_mod.tobytes(), frame_rate=fr, sample_width=sw, channels=1)
     new_source = '.'.join(source.split('.')[:-1]) + "_changed.wav"
-    new_audio.export(new_source, format="wav", codec="copy")
+    if samples.ndim >= 2:
+        new_samples = np.array([[left_mod[i], right_mod[i]] for i in range(len(left_mod))])
+    else:
+        new_samples = left_mod
 
+    # soundfile.write(new_source, new_samples, sample_rate)
+    wavfile.write(new_source, sample_rate, new_samples.astype(np.float32))
+    # wavfile.write(new_source, sample_rate, new_samples)
     return new_source, segment_width
