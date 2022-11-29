@@ -2,12 +2,18 @@ from tkinter.messagebox import showinfo
 from tkinter import *
 from tkinter import filedialog as fd
 
-def enc(fn):
-    for i in range(100000000):
-        k=i//1024
+
+def long_func(frame, arr):
+    for i in range(300000000):
+        pass
+    frame.destroy()
+    for i in arr:
+        i.pack()
+    showinfo('Key', 'Your key is: ')
 
 def info():
     showinfo("Information", "Данное приложение позволять кодировать и декодировать сообщение в аудио файле с помощью стеганографии, для этого нажмите на соответствующую кнопку в основном окне. ")
+
 
 def back(*p):
     global root
@@ -19,22 +25,25 @@ def back(*p):
     root.title('Steganography')
 
 
-def open_file(tx):
+def open_file(tx, arr):
     #if tx=='':
         #showinfo("ERROR", 'Вы должны что-то ввести')
         #return 0
     global root
-    fn=''
+    fn = ''
     fn = fd.askopenfilename()
     if fn == '':
         showinfo("ERROR", "Файл не выбран")
         return 0
+    for i in arr:
+        i.pack_forget()
     frame_mid = Frame(root)
     frame_mid.place(relx=0.3, rely=0, relheight=0.7, relwidth=0.4)
-    lbl = Label(frame_mid, text= f'Work with file {fn} in process\n\n\n\n\n')
-    btn = Button(frame_mid, text='OK', command=lambda: frame_mid.destroy(), height=10, width=10)
+    lbl = Label(frame_mid, text=f'Start working with file {fn}\n\n\n\n\n')
+    btn1 = Button(frame_mid, text='START', command=lambda: long_func(frame_mid, arr), height=10, width=10)
     lbl.pack()
-    btn.pack()
+    btn1.pack()
+
 
 def encode():
     global root, btn, frame_top, frame_bottom
@@ -46,11 +55,11 @@ def encode():
     tx.pack()
     ent = Entry()
     ent.pack()
-    btn = Button(root, text='Choose file', command=lambda:open_file(ent.get()), height=20, width=20)
+    btn = Button(root, text='Choose file', command=lambda: open_file(ent.get(), [tx, ent, btn]), height=20, width=20)
     btn.pack()
     frame_back = Frame(root, bg='white', bd=5)
     frame_back.place(relx=0, rely=0.9, relwidth=0.1, relheight=0.1)
-    btn1 = Button(frame_back,text="Back", command=lambda: back(btn, btn1, frame_back, tx, ent), height=2, width=10)
+    btn1 = Button(frame_back, text="Back", command=lambda: back(btn, btn1, frame_back, tx, ent), height=2, width=10)
     btn1.pack()
     root.mainloop()
 
@@ -61,15 +70,15 @@ def decode():
     frame_bottom.place_forget()
     root['bg'] = 'white'
     root.title('Steganography_decode')
-    tx = Label(text='Введите ключ')
-    tx.pack()
-    ent = Entry()
-    ent.pack()
-    btn = Button(root, text='Choose file', command=lambda: open_file(ent.get()), height=20, width=20)
+    tx1 = Label(text='Введите ключ')
+    tx1.pack()
+    ent1 = Entry()
+    ent1.pack()
+    btn = Button(root, text='Choose file', command=lambda: open_file(ent1.get(), [tx1, ent1, btn]), height=20, width=20)
     btn.pack()
     frame_back = Frame(root, bg='white', bd=5)
     frame_back.place(relx=0, rely=0.9, relwidth=0.1, relheight=0.1)
-    btn1 = Button(frame_back, text="Back", command=lambda: back(btn, btn1, frame_back, ent, tx), height=2, width=10)
+    btn1 = Button(frame_back, text="Back", command=lambda: back(btn, btn1, frame_back, ent1, tx1), height=2, width=10)
     btn1.pack()
     root.mainloop()
 
