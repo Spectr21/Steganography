@@ -1,15 +1,48 @@
 from tkinter.messagebox import showinfo
 from tkinter import *
 from tkinter import filedialog as fd
+#import phase
 
+def long_func(flag, fn, tx, frame, arr):
+    if flag:
+        #encode
+        try:
+            pass
+        except:
+            showinfo("ERROR", "ERROR")
+            frame.destroy()
+            for i in arr:
+                i.pack()
+            return 0
+        frame.destroy()
+        for i in arr:
+            i.pack()
+        if tx == '12':
+            showinfo("ERROR", "Unknown symbols")
+            return 0
+        showinfo('Key', 'Your key is: ')
+    else:
+        #decode
+        try:
+            pass
+        except:
+            showinfo("ERROR", "ERROR")
+            frame.destroy()
+            for i in arr:
+                i.pack()
+            return 0
+        frame.destroy()
+        for i in arr:
+            i.pack()
+        if tx == '12':
+            showinfo("ERROR", "Unknown symbols")
+            return 0
+        showinfo('Message', 'Your message is: ')
+    '''fl,segment_wid = phase.hide(fn, tx)
+    if fl == None and segment_wid == None:
+        showinfo("ERROR", "Unknown symbols")
+        return 0'''
 
-def long_func(frame, arr):
-    for i in range(300000000):
-        pass
-    frame.destroy()
-    for i in arr:
-        i.pack()
-    showinfo('Key', 'Your key is: ')
 
 def info():
     showinfo("Information", "Данное приложение позволять кодировать и декодировать сообщение в аудио файле с помощью стеганографии, для этого нажмите на соответствующую кнопку в основном окне. ")
@@ -25,7 +58,7 @@ def back(*p):
     root.title('Steganography')
 
 
-def open_file(tx, arr):
+def open_file(flag, tx, arr):
     #if tx=='':
         #showinfo("ERROR", 'Вы должны что-то ввести')
         #return 0
@@ -40,7 +73,7 @@ def open_file(tx, arr):
     frame_mid = Frame(root)
     frame_mid.place(relx=0.3, rely=0, relheight=0.7, relwidth=0.4)
     lbl = Label(frame_mid, text=f'Start working with file {fn}\n\n\n\n\n')
-    btn1 = Button(frame_mid, text='START', command=lambda: long_func(frame_mid, arr), height=10, width=10)
+    btn1 = Button(frame_mid, text='START', command=lambda: long_func(flag, fn, tx, frame_mid, arr), height=10, width=10)
     lbl.pack()
     btn1.pack()
 
@@ -55,7 +88,7 @@ def encode():
     tx.pack()
     ent = Entry()
     ent.pack()
-    btn = Button(root, text='Choose file', command=lambda: open_file(ent.get(), [tx, ent, btn]), height=20, width=20)
+    btn = Button(root, text='Choose file', command=lambda: open_file(1, ent.get(), [tx, ent, btn]), height=20, width=20)
     btn.pack()
     frame_back = Frame(root, bg='white', bd=5)
     frame_back.place(relx=0, rely=0.9, relwidth=0.1, relheight=0.1)
@@ -74,7 +107,7 @@ def decode():
     tx1.pack()
     ent1 = Entry()
     ent1.pack()
-    btn = Button(root, text='Choose file', command=lambda: open_file(ent1.get(), [tx1, ent1, btn]), height=20, width=20)
+    btn = Button(root, text='Choose file', command=lambda: open_file(0, ent1.get(), [tx1, ent1, btn]), height=20, width=20)
     btn.pack()
     frame_back = Frame(root, bg='white', bd=5)
     frame_back.place(relx=0, rely=0.9, relwidth=0.1, relheight=0.1)
