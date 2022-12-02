@@ -1,6 +1,5 @@
-import librosa
-import soundfile
-from scipy.io import wavfile
+from librosa import load
+from scipy.io.wavfile import write
 import numpy as np
 from math import ceil, log2, pi
 from cmath import phase, exp
@@ -35,14 +34,17 @@ def arr_to_str(bits):
 
 def recover(source, segment_width):
     """
-    :param source:
+    recovers a message from an audio file, segment width is needed for that
+    :param source: path to audio file
     :param segment_width:
-    :return:
+    :return message:
     """
-    samples, sample_rate = librosa.load(source, mono=False)
+    print("getting samples")
+    samples, sample_rate = load(source, mono=False)
     left = samples
     if samples.ndim >= 2:
         left = samples[0]
+    print("phases using fft")
     segment0 = left[:segment_width]
     wave0 = np.fft.rfft(segment0)
     vphase = np.vectorize(phase)
@@ -67,17 +69,35 @@ def recover(source, segment_width):
             bits.append(1)
         else:
             break
-    return arr_to_str(bits)
+    file_path = '/'.join(source.split('/')[:-1]) + "/msg.txt"
+    msg = arr_to_str(bits)
+    f = open(file_path, 'w')
+    f.write(msg)
+    f.close()
+    return msg
 
 
 def hide(source, message):
     """
-    :param source:
+    creates a new audio file from given audio file and hides a message there
+    :param source: path to audio file
     :param message:
-    :return:
+    :return new_source, segment_width:
     """
     print("getting samples")
-    samples, sample_rate = librosa.load(source, mono=False)
+
+    samples, sample_rate = load(source, mono=False)
+    if samples.ndim >= 2:
+        cnt = 0
+        while samples[0][cnt] == 0:
+            cnt += 1
+        for i in range(samples.ndim):
+            samples[i] = samples[i][cnt:]
+    else:
+        cnt = 0
+        while samples[cnt] == 0:
+            cnt += 1
+        samples = samples[cnt:]
 
     print("segments and add silence if needed")
     left = samples
@@ -113,8 +133,7 @@ def hide(source, message):
     phase0_mod = phases[0].copy()
     msg_bits = str_to_arr(message)
     if msg_bits == [None]:
-        print("Unknown symbol")
-        return
+        return None, None
     for i in range(message_len):
         ind = waves_count - i - 2
         # ind = i + 1
@@ -133,11 +152,6 @@ def hide(source, message):
     print("segments using ifft")
 
     def get_complex(amp, ph):
-        """
-        :param amp:
-        :param ph:
-        :return:
-        """
         return amp * exp(ph * 1j)
 
     vwave = np.vectorize(get_complex)
@@ -152,8 +166,11 @@ def hide(source, message):
         new_samples = np.array([[left_mod[i], right_mod[i]] for i in range(len(left_mod))])
     else:
         new_samples = left_mod
-
     # soundfile.write(new_source, new_samples, sample_rate)
-    wavfile.write(new_source, sample_rate, new_samples.astype(np.float32))
+    write(new_source, sample_rate, new_samples.astype(np.float16))
+    file_path = '/'.join(source.split('/')[:-1]) + "/key.txt"
+    f = open(file_path, 'w')
+    f.write(str(segment_width))
+    f.close()
     # wavfile.write(new_source, sample_rate, new_samples)
     return new_source, segment_width
