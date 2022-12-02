@@ -128,7 +128,7 @@ back_array = []
 root = Tk()
 root['bg'] = 'grey'
 root.title('Steganography')
-root.geometry('900x550')
+root.geometry('900x300')
 root.resizable(width=False, height=False)
 
 frame_top = Frame(root, bg='#ffb700', bd=5)
@@ -144,7 +144,7 @@ btn = Button(frame_bottom, text='Encode', command=encode, height=20, width=200)
 btn.pack()
 
 frame_info = Frame(root)
-frame_info.place(relx=0.88, rely=0.95, relwidth=0.12, relheight=0.05)
+frame_info.place(relx=0.88, rely=0.92, relwidth=0.12, relheight=0.08)
 
 btn = Button(frame_info, text='Programme info', command=info)
 btn.pack()
