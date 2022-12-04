@@ -167,7 +167,7 @@ def hide(source, message):
     else:
         new_samples = left_mod
     # soundfile.write(new_source, new_samples, sample_rate)
-    write(new_source, sample_rate, new_samples.astype(np.float16))
+    write(new_source, sample_rate, new_samples)
     file_path = '/'.join(source.split('/')[:-1]) + "/key.txt"
     f = open(file_path, 'w')
     f.write(str(segment_width))
