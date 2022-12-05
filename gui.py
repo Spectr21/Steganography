@@ -1,15 +1,24 @@
-from tkinter import messagebox
+from tkinter.messagebox import showinfo
 from tkinter import *
 from tkinter import filedialog as fd
 import Functions
 
 
 def long_func(flag, fn, tx, frame, arr):
+    """
+    :param flag:
+    :param fn:
+    :param tx:
+    :param frame:
+    :param arr:
+    :return:
+    """
     if flag:
         try:
             new_source, segment_width = Functions.hide(fn, tx)
+            # print(segment_width)
         except:
-            messagebox.showinfo("ERROR", "ERROR")
+            showinfo("ERROR", "ERROR")
             frame.destroy()
             for i in arr:
                 i.pack()
@@ -18,15 +27,15 @@ def long_func(flag, fn, tx, frame, arr):
         for i in arr:
             i.pack()
         if segment_width is None:
-            messagebox.showinfo("ERROR", "Unknown symbols")
+            showinfo("ERROR", "Unknown symbols")
             return 0
-        messagebox.showinfo("Key", "Your key is: " + str(segment_width))
+        showinfo("Key", "Your key is: " + str(segment_width))
     else:
         # decode
         try:
             msg = Functions.recover(fn, int(tx))
         except:
-            messagebox.showinfo("ERROR", "ERROR")
+            showinfo("ERROR", "ERROR")
             frame.destroy()
             for i in arr:
                 i.pack()
@@ -34,19 +43,24 @@ def long_func(flag, fn, tx, frame, arr):
         frame.destroy()
         for i in arr:
             i.pack()
-        messagebox.showinfo('Message', 'Your message is: ' + str(msg))
+        showinfo('Message', 'Your message is: ' + str(msg))
     '''fl,segment_wid = phase.hide(fn, tx)
     if fl == None and segment_wid == None:
         showinfo("ERROR", "Unknown symbols")
         return 0'''
+    for i in range(10000000):
+        pass
+    frame.destroy()
+    for i in arr:
+        i.pack()
 
 
 def info():
-    messagebox.showinfo("Information",
-                        "Данное приложение позволять кодировать и декодировать сообщение в аудио файле с помощью стеганографии, для этого нажмите на соответствующую кнопку в основном окне. ")
+    showinfo("Information",
+             "Данное приложение позволять кодировать и декодировать сообщение в аудио файле с помощью стеганографии, для этого нажмите на соответствующую кнопку в основном окне. ")
 
 
-def back(*p):
+def back(p):
     global root
     for i in p:
         i.destroy()
@@ -57,19 +71,20 @@ def back(*p):
 
 
 def open_file(flag, tx, arr):
-    # if tx=='':
-    # showinfo("ERROR", 'Вы должны что-то ввести')
-    # return 0
-    global root
+    if tx == '':
+        showinfo("ERROR", 'Вы должны что-то ввести')
+        return 0
+    global root, frame_mid
     fn = ''
     fn = fd.askopenfilename()
     if fn == '':
-        messagebox.showinfo("ERROR", "Файл не выбран")
+        showinfo("ERROR", "Файл не выбран")
         return 0
     for i in arr:
         i.pack_forget()
     frame_mid = Frame(root)
     frame_mid.place(relx=0.3, rely=0, relheight=0.7, relwidth=0.4)
+    back_array.append(frame_mid)
     lbl = Label(frame_mid, text=f'Start working with file {fn}\n\n\n\n\n')
     btn1 = Button(frame_mid, text='START', command=lambda: long_func(flag, fn, tx, frame_mid, arr), height=10, width=10)
     lbl.pack()
@@ -77,7 +92,7 @@ def open_file(flag, tx, arr):
 
 
 def encode():
-    global root, btn, frame_top, frame_bottom
+    global root, btn, frame_top, frame_bottom, back_array
     frame_top.place_forget()
     frame_bottom.place_forget()
     root['bg'] = 'white'
@@ -90,13 +105,14 @@ def encode():
     btn.pack()
     frame_back = Frame(root, bg='white', bd=5)
     frame_back.place(relx=0, rely=0.9, relwidth=0.1, relheight=0.1)
-    btn1 = Button(frame_back, text="Back", command=lambda: back(btn, btn1, frame_back, tx, ent), height=2, width=10)
+    btn1 = Button(frame_back, text="Back", command=lambda: back(back_array), height=2, width=10)
     btn1.pack()
+    back_array = [btn, btn1, frame_back, tx, ent]
     root.mainloop()
 
 
 def decode():
-    global root, btn, frame_top, frame_bottom
+    global root, btn, frame_top, frame_bottom, back_array
     frame_top.place_forget()
     frame_bottom.place_forget()
     root['bg'] = 'white'
@@ -110,15 +126,17 @@ def decode():
     btn.pack()
     frame_back = Frame(root, bg='white', bd=5)
     frame_back.place(relx=0, rely=0.9, relwidth=0.1, relheight=0.1)
-    btn1 = Button(frame_back, text="Back", command=lambda: back(btn, btn1, frame_back, ent1, tx1), height=2, width=10)
+    btn1 = Button(frame_back, text="Back", command=lambda: back(back_array), height=2, width=10)
     btn1.pack()
+    back_array = [btn, btn1, frame_back, ent1, tx1]
     root.mainloop()
 
 
+back_array = []
 root = Tk()
 root['bg'] = 'grey'
 root.title('Steganography')
-root.geometry('900x550')
+root.geometry('900x300')
 root.resizable(width=False, height=False)
 
 frame_top = Frame(root, bg='#ffb700', bd=5)
@@ -134,7 +152,7 @@ btn = Button(frame_bottom, text='Encode', command=encode, height=20, width=200)
 btn.pack()
 
 frame_info = Frame(root)
-frame_info.place(relx=0.88, rely=0.95, relwidth=0.12, relheight=0.05)
+frame_info.place(relx=0.88, rely=0.92, relwidth=0.12, relheight=0.08)
 
 btn = Button(frame_info, text='Programme info', command=info)
 btn.pack()
