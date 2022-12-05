@@ -69,11 +69,11 @@ def recover(source, segment_width):
             bits.append(1)
         else:
             break
-    file_path = '/'.join(source.split('/')[:-1]) + "/msg.txt"
     msg = arr_to_str(bits)
-    f = open(file_path, 'w')
-    f.write(msg)
-    f.close()
+    file_path = '/'.join(source.split('/')[:-1]) + "/msg.txt"
+    # f = open(file_path, 'w')
+    # f.write(msg)
+    # f.close()
     return msg
 
 
@@ -87,22 +87,17 @@ def hide(source, message):
     print("getting samples")
 
     samples, sample_rate = load(source, mono=False)
+    cnt = 0
     if samples.ndim >= 2:
-        cnt = 0
         while samples[0][cnt] == 0:
             cnt += 1
-        for i in range(samples.ndim):
-            samples[i] = samples[i][cnt:]
+        left = samples[0][cnt:]
     else:
-        cnt = 0
         while samples[cnt] == 0:
             cnt += 1
-        samples = samples[cnt:]
+        left = samples[cnt:]
 
     print("segments and add silence if needed")
-    left = samples
-    if samples.ndim >= 2:
-        left = samples[0]
     message_len = len(message) * 8
     v = ceil(log2(message_len) + 1)
     segment_width = 2 ** (v + 1)
@@ -110,7 +105,7 @@ def hide(source, message):
     left = np.resize(left, segment_count * segment_width)
     segments = left.reshape(segment_count, -1)
     if samples.ndim >= 2:
-        right_mod = np.resize(samples[1], segment_count * segment_width)
+        right_mod = np.resize(samples[1][cnt:], segment_count * segment_width)
 
     print("phases and amplitubes using fft")
 
@@ -167,10 +162,10 @@ def hide(source, message):
     else:
         new_samples = left_mod
     # soundfile.write(new_source, new_samples, sample_rate)
-    write(new_source, sample_rate, new_samples)
+    write(new_source, sample_rate, new_samples.astype(samples.dtype))
     file_path = '/'.join(source.split('/')[:-1]) + "/key.txt"
-    f = open(file_path, 'w')
-    f.write(str(segment_width))
-    f.close()
+    # f = open(file_path, 'w')
+    # f.write(str(segment_width))
+    # f.close()
     # wavfile.write(new_source, sample_rate, new_samples)
     return new_source, segment_width
