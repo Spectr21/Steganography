@@ -14,9 +14,9 @@ def long_func(flag, fn, tx, frame, arr):
     :return:
     """
     if flag:
+        # encode
         try:
             new_source, segment_width = Functions.hide(fn, tx)
-            # print(segment_width)
         except:
             showinfo("ERROR", "ERROR")
             frame.destroy()
@@ -44,10 +44,6 @@ def long_func(flag, fn, tx, frame, arr):
         for i in arr:
             i.pack()
         showinfo('Message', 'Your message is: ' + str(msg))
-    '''fl,segment_wid = phase.hide(fn, tx)
-    if fl == None and segment_wid == None:
-        showinfo("ERROR", "Unknown symbols")
-        return 0'''
     for i in range(10000000):
         pass
     frame.destroy()
@@ -57,7 +53,7 @@ def long_func(flag, fn, tx, frame, arr):
 
 def info():
     showinfo("Information",
-             "Данное приложение позволять кодировать и декодировать сообщение в аудио файле с помощью стеганографии, для этого нажмите на соответствующую кнопку в основном окне. ")
+             "This program allows the user to encode  a secret message in an audio file and decode it from a resulting audio file using steganography, by pressing a corresponding button in the main menu.")
 
 
 def back(p):
@@ -97,7 +93,7 @@ def encode():
     frame_bottom.place_forget()
     root['bg'] = 'white'
     root.title('Steganography_encode')
-    tx = Label(text='Введите текст закодированного сообщения')
+    tx = Label(text='Enter secret message')
     tx.pack()
     ent = Entry()
     ent.pack()
@@ -117,7 +113,7 @@ def decode():
     frame_bottom.place_forget()
     root['bg'] = 'white'
     root.title('Steganography_decode')
-    tx1 = Label(text='Введите ключ')
+    tx1 = Label(text='Enter key')
     tx1.pack()
     ent1 = Entry()
     ent1.pack()
