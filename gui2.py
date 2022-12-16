@@ -45,8 +45,8 @@ def long_func(flag, fn, tx, frame, arr):
         for i in arr:
             i.pack()
         showinfo('Message', 'Your message is: ' + str(msg))
-    for i in range(1000000000):
-        pass
+    '''for i in range(1000000000):
+        pass'''
     frame.destroy()
     for i in arr:
         i.pack()
