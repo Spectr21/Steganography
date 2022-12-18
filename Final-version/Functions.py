@@ -56,16 +56,7 @@ def recover(source, segment_width):
     waves_count = segment_width // 2 + 1
     bits = []
     for i in range(segment_width // 4):
-        # delta = abs(abs(phase0[waves_count - i - 2]) - pi / 2)
-        # if delta < 0.3:
-        #     if phase0[waves_count - i - 2] > 0:
-        #         bits.append(1)
-        #     else:
-        #         bits.append(0)
-        # else:
-        #     break
         ind = waves_count - i - 2
-        # ind = i + 1
         delta = phase0[ind]
         if delta < -pi / 3:
             bits.append(0)
@@ -74,10 +65,6 @@ def recover(source, segment_width):
         else:
             break
     msg = arr_to_str(bits)
-    file_path = '/'.join(source.split('/')[:-1]) + "/msg.txt"
-    # f = open(file_path, 'w')
-    # f.write(msg)
-    # f.close()
     return msg
 
 
@@ -136,7 +123,6 @@ def hide(source, message):
         return None, None
     for i in range(message_len):
         ind = waves_count - i - 2
-        # ind = i + 1
         if msg_bits[i] == 1:
             phase0_mod[ind] = pi / 2
         else:
@@ -166,11 +152,5 @@ def hide(source, message):
         new_samples = np.array([[left_mod[i], right_mod[i]] for i in range(len(left_mod))])
     else:
         new_samples = left_mod
-    # soundfile.write(new_source, new_samples, sample_rate)
     write(new_source, sample_rate, new_samples.astype(samples.dtype))
-    # file_path = '/'.join(source.split('/')[:-1]) + "/key.txt"
-    # f = open(file_path, 'w')
-    # f.write(str(segment_width))
-    # f.close()
-    # wavfile.write(new_source, sample_rate, new_samples)
     return new_source, segment_width
