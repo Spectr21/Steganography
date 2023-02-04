@@ -15,10 +15,9 @@ def str_to_arr(s):
     :return [] bits: array of bits representing string
     """
     bits = []
-    for symb in s:
-        for bit in (bin(ord(symb))[2:]).zfill(8):
-            if ord(symb) > 255:
-                return [None]
+    numbers = s.encode("utf8", errors='replace')
+    for num in numbers:
+        for bit in (bin(num)[2:]).zfill(8):
             bits.append(int(bit))
     return bits
 
@@ -28,12 +27,12 @@ def arr_to_str(bits):
     :param [] bits: array of bits representing string
     :return str s: some string
     """
-    s = ""
+    s = []
     for i in range(len(bits) // 8):
         byte = bits[i * 8:i * 8 + 8]
         n = int(''.join(list(map(str, byte))), 2)
-        s += chr(n)
-    return s
+        s.append(n)
+    return bytes(s).decode("utf8")
 
 
 def recover(source, segment_width):
@@ -89,15 +88,15 @@ def hide(source, message):
         left = np.copy(samples[cnt:])
 
     print("segments and add silence if needed")
-    message_len = len(message) * 8
+    message_len = len(bytes(message.encode("utf8"))) * 8
     v = ceil(log2(message_len) + 1)
     segment_width = 2 ** (v + 1)
     segment_count = ceil(len(left) / segment_width)
-    left.resize(segment_count * segment_width, refcheck = False)
+    left.resize(segment_count * segment_width, refcheck=False)
     segments = np.reshape(left, (segment_count, -1))
     if samples.ndim >= 2:
         right_mod = np.copy(samples[1][cnt:])
-        right_mod.resize(segment_count * segment_width, refcheck = False)
+        right_mod.resize(segment_count * segment_width, refcheck=False)
 
     print("phases and amplitubes using fft")
 
